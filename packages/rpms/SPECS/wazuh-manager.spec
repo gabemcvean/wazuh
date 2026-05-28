@@ -975,6 +975,8 @@ rm -fr %{buildroot}
 %changelog
 * Tue Jun 09 2026 support <info@wazuh.com> - 4.14.6
 - More info: https://documentation.wazuh.com/current/release-notes/release-4-14-6.html
+* Thu May 21 2026 support <info@wazuh.com> - 4.10.4
+- More info: https://documentation.wazuh.com/current/release-notes/release-4-10-4.html
 * Thu Apr 23 2026 support <info@wazuh.com> - 4.14.5
 - More info: https://documentation.wazuh.com/current/release-notes/release-4-14-5.html
 * Tue Mar 17 2026 support <info@wazuh.com> - 4.14.4
@@ -991,6 +993,10 @@ rm -fr %{buildroot}
 - More info: https://documentation.wazuh.com/current/release-notes/release-4-13-1.html
 * Thu Sep 18 2025 support <info@wazuh.com> - 4.13.0
 - More info: https://documentation.wazuh.com/current/release-notes/release-4-13-0.html
+* Tue Aug 19 2025 support <info@wazuh.com> - 4.10.3
+- More info: https://documentation.wazuh.com/current/release-notes/release-4-10-3.html
+* Wed May 21 2025 support <info@wazuh.com> - 4.10.2
+- More info: https://documentation.wazuh.com/current/release-notes/release-4-10-2.html
 * Wed May 07 2025 support <info@wazuh.com> - 4.12.0
 - More info: https://documentation.wazuh.com/current/release-notes/release-4-12-0.html
 * Tue Apr 01 2025 support <info@wazuh.com> - 4.11.2
@@ -999,12 +1005,6 @@ rm -fr %{buildroot}
 - More info: https://documentation.wazuh.com/current/release-notes/release-4-11-1.html
 * Wed Feb 19 2025 support <info@wazuh.com> - 4.11.0
 - More info: https://documentation.wazuh.com/current/release-notes/release-4-11-0.html
-* Thu May 21 2026 support <info@wazuh.com> - 4.10.4
-- More info: https://documentation.wazuh.com/current/release-notes/release-4-10-4.html
-* Tue Aug 19 2025 support <info@wazuh.com> - 4.10.3
-- More info: https://documentation.wazuh.com/current/release-notes/release-4-10-3.html
-* Wed May 21 2025 support <info@wazuh.com> - 4.10.2
-- More info: https://documentation.wazuh.com/current/release-notes/release-4-10-2.html
 * Thu Jan 16 2025 support <info@wazuh.com> - 4.10.1
 - More info: https://documentation.wazuh.com/current/release-notes/release-4-10-1.html
 * Thu Jan 09 2025 support <info@wazuh.com> - 4.10.0
