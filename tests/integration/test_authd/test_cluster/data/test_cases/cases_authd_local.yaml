@@ -76,14 +76,14 @@
   metadata:
     cases:
     -
-      input: '{"arguments":{"name":"user1","ip":"any","force":{"enabled":true, "key_mismatch":false, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
-      output: '{"error":0,"data":{"id":"004","name":"user1","ip":"any","key":'
+      input: '{"arguments":{"name":"user_1","ip":"any","force":{"enabled":true, "key_mismatch":false, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
+      output: '{"error":0,"data":{"id":"004","name":"user_1","ip":"any","key":'
     -
-      input: '{"arguments":{"name":"user_2","ip":"192.0.0.0","force":{"enabled":true, "key_mismatch":false, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
-      output: '{"error":0,"data":{"id":"005","name":"user_2","ip":"192.0.0.0","key":'
+      input: '{"arguments":{"name":"user_2","ip":"192.0.0.1","force":{"enabled":true, "key_mismatch":false, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
+      output: '{"error":0,"data":{"id":"005","name":"user_2","ip":"192.0.0.1","key":'
     -
-      input: '{"arguments":{"id":"003","name":"user_3","ip":"any","force":{"enabled":true, "key_mismatch":false, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
-      output: '{"error":0,"data":{"id":"003","name":"user_3","ip":"any","key":'
+      input: '{"arguments":{"id":"006","name":"user_3","ip":"any","force":{"enabled":true, "key_mismatch":false, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
+      output: '{"error":0,"data":{"id":"006","name":"user_3","ip":"any","key":'
     pre_existent_agents:
     -
       id: '001'
@@ -173,8 +173,8 @@
       input: '{"arguments":{"name":"user1","ip":"any","key_hash":"74ccacd341a6087b2d3a31656b07664a9c5bb307","force":{"enabled":true, "key_mismatch":true, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
       output: '{"error":9008,"message":"Duplicate name"}'
     -
-      input: '{"arguments":{"name":"user1","ip":"any","key_hash":"123ABC","force":{"enabled":true, "key_mismatch":true, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
-      output: '{"error":0,"data":{"id":"003","name":"user1","ip":"any","key":'
+      input: '{"arguments":{"name":"user_1","ip":"any","key_hash":"123ABC","force":{"enabled":true, "key_mismatch":true, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
+      output: '{"error":0,"data":{"id":"003","name":"user_1","ip":"any","key":'
     pre_existent_agents:
     -
       id: '001'
@@ -199,8 +199,8 @@
       input: '{"arguments":{"name":"user_","ip":"10.10.10.10","groups":"Group1","key_hash":"74ccacd341a6087b2d3a31656b07664a9c5bb307","force":{"enabled":true, "key_mismatch":true, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
       output: '{"error":9007,"message":"Duplicate IP"}'
     -
-      input: '{"arguments":{"name":"user1","ip":"10.10.10.10","groups":"Group1","key_hash":"123ABC","force":{"enabled":true, "key_mismatch":true, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
-      output: '{"error":0,"data":{"id":"003","name":"user1","ip":"10.10.10.10","key":'
+      input: '{"arguments":{"name":"user_1","ip":"10.10.10.11","groups":"Group1","key_hash":"123ABC","force":{"enabled":true, "key_mismatch":true, "disconnected_time":{"enabled":false, "value":"0"}, "after_registration_time":"0"}},"function":"add"}'
+      output: '{"error":0,"data":{"id":"003","name":"user_1","ip":"10.10.10.11","key":'
     pre_existent_agents:
     -
       id: '001'
