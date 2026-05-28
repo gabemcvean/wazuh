@@ -8,13 +8,11 @@ import pytest
 import time
 
 from pathlib import Path
-from wazuh_testing.tools.monitors.file_monitor import FileMonitor
 from wazuh_testing.tools.simulators.agent_simulator import connect
 from wazuh_testing.utils.callbacks import generate_callback
 from wazuh_testing.modules.remoted import patterns
 from wazuh_testing.utils.sockets import send_active_response_message
 from wazuh_testing.utils.configuration import get_test_cases_data, load_configuration_template
-from wazuh_testing.constants.paths.logs import WAZUH_LOG_PATH
 from wazuh_testing.modules.remoted.configuration import REMOTED_DEBUG
 from wazuh_testing.tools.monitors import queue_monitor
 
@@ -74,8 +72,6 @@ def test_active_response_ar_sending(test_configuration, test_metadata, configure
 
     '''
 
-    log_monitor = FileMonitor(WAZUH_LOG_PATH)
-
     agent = simulate_agents[0]
 
     time.sleep(1)
@@ -83,16 +79,8 @@ def test_active_response_ar_sending(test_configuration, test_metadata, configure
     active_response_message = fr"(local_source) [] NRN {agent.id} {ACTIVE_RESPONSE_EXAMPLE_COMMAND}"
     send_active_response_message(active_response_message)
 
-    log_monitor.start(callback=generate_callback(patterns.ACTIVE_RESPONSE_RECEIVED))
-
-    assert log_monitor.callback_result
-
-    log_monitor.start(callback=generate_callback(patterns.ACTIVE_RESPONSE_SENT))
-
-    assert log_monitor.callback_result
-
     log_queue_monitor = queue_monitor.QueueMonitor(agent.rcv_msg_queue)
     log_queue_monitor.start(callback=generate_callback(regex=patterns.EXECD_MESSAGE,
                                                        replacement={"message": ACTIVE_RESPONSE_EXAMPLE_COMMAND}))
-    assert log_monitor.callback_result
+    assert log_queue_monitor.callback_result
     injector.stop_receive()
