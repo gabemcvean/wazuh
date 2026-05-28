@@ -67,7 +67,7 @@ INVALID_PASSWORD_MESSAGE = 'ERROR: Invalid password'
 SUCCESS_MESSAGE = "OSSEC K:'001 {} any "
 
 receiver_sockets_params = [(("localhost", DEFAULT_SSL_REMOTE_ENROLLMENT_PORT), 'AF_INET', 'SSL_TLSv1_2')]
-monitored_sockets_params = [(MODULES_DAEMON, None, True), (WAZUH_DB_DAEMON, None, True), (AUTHD_DAEMON, None, True)]
+monitored_sockets_params = [(WAZUH_DB_DAEMON, None, True), (MODULES_DAEMON, None, True), (AUTHD_DAEMON, None, True)]
 receiver_sockets, monitored_sockets = None, None
 
 # Test daemons to restart.

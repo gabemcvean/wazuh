@@ -53,6 +53,7 @@ from wazuh_testing.utils.configuration import get_test_cases_data, load_configur
 from wazuh_testing.tools.socket_controller import SocketController
 from wazuh_testing.constants.ports import DEFAULT_SSL_REMOTE_ENROLLMENT_PORT
 from wazuh_testing.constants.daemons import AUTHD_DAEMON, WAZUH_DB_DAEMON, MODULES_DAEMON
+from wazuh_testing.modules.authd.configuration import AUTHD_DEBUG_CONFIG
 
 from . import CONFIGURATIONS_FOLDER_PATH, TEST_CASES_FOLDER_PATH
 
@@ -97,12 +98,13 @@ monitored_sockets_params = [(MODULES_DAEMON, None, True), (WAZUH_DB_DAEMON, None
 receiver_sockets, monitored_sockets = None, None
 
 daemons_handler_configuration = {'daemons': [AUTHD_DAEMON], 'ignore_errors': True}
+local_internal_options = {AUTHD_DEBUG_CONFIG: '2'}
 
 # Tests
 @pytest.mark.parametrize('test_configuration,test_metadata', zip(test_configuration, test_metadata), ids=test_cases_ids)
 def test_authd_ssl_certs(test_configuration, test_metadata, set_wazuh_configuration,
-                         generate_ca_certificate, truncate_monitored_files, daemons_handler,
-                         wait_for_authd_startup):
+                         generate_ca_certificate, truncate_monitored_files, configure_local_internal_options,
+                         daemons_handler, wait_for_authd_startup):
     '''
     description:
         Checks if the 'wazuh-manager-authd' daemon can manage 'SSL' connections with agents

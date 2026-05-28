@@ -95,7 +95,7 @@ def check_options(test_metadata):
         # Reopen socket (socket is closed by manager after sending message with client key)
         authd_sock.open()
         authd_sock.send(create_authd_request(stage['input']), size=False)
-        timeout = time.time()
+        timeout = time.time() + 10
         response = ''
         while response == '':
             response = authd_sock.receive().decode()
