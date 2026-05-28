@@ -799,11 +799,33 @@ void test_w_uncompress_gzfile_success(void **state) {
 
 // w_homedir
 
+void test_w_homedir_env_var(void **state)
+{
+    char *val = NULL;
+    char *argv0 = "bin/test";
+    struct stat stat_buf = { .st_mode = 0040000 }; // S_IFDIR
+
+    // WAZUH_HOME set -> realpath() not called.
+    expect_string(__wrap_getenv, name, WAZUH_HOME_ENV);
+    will_return(__wrap_getenv, "/home/wazuh");
+
+    expect_string(__wrap_stat, __file, "/home/wazuh");
+    will_return(__wrap_stat, &stat_buf);
+    will_return(__wrap_stat, 0);
+
+    val = w_homedir(argv0);
+    assert_string_equal(val, "/home/wazuh");
+    free(val);
+}
+
 void test_w_homedir_first_attempt(void **state)
 {
     char *argv0 = "/usr/share/wazuh/bin/test";
     struct stat stat_buf = { .st_mode = 0040000 }; // S_IFDIR
     char *val = NULL;
+
+    expect_string(__wrap_getenv, name, WAZUH_HOME_ENV);
+    will_return(__wrap_getenv, NULL);
 
     expect_string(__wrap_realpath, path, "/proc/self/exe");
     will_return(__wrap_realpath, argv0);
@@ -822,6 +844,9 @@ void test_w_homedir_second_attempt(void **state)
     char *argv0 = "/usr/share/wazuh/bin/test";
     struct stat stat_buf = { .st_mode = 0040000 }; // S_IFDIR
     char *val = NULL;
+
+    expect_string(__wrap_getenv, name, WAZUH_HOME_ENV);
+    will_return(__wrap_getenv, NULL);
 
     expect_string(__wrap_realpath, path, "/proc/self/exe");
     will_return(__wrap_realpath, NULL);
@@ -843,6 +868,9 @@ void test_w_homedir_third_attempt(void **state)
     char *argv0 = "/usr/share/wazuh/bin/test";
     struct stat stat_buf = { .st_mode = 0040000 }; // S_IFDIR
     char *val = NULL;
+
+    expect_string(__wrap_getenv, name, WAZUH_HOME_ENV);
+    will_return(__wrap_getenv, NULL);
 
     expect_string(__wrap_realpath, path, "/proc/self/exe");
     will_return(__wrap_realpath, NULL);
@@ -868,6 +896,9 @@ void test_w_homedir_check_argv0(void **state)
     struct stat stat_buf = { .st_mode = 0040000 }; // S_IFDIR
     char *val = NULL;
 
+    expect_string(__wrap_getenv, name, WAZUH_HOME_ENV);
+    will_return(__wrap_getenv, NULL);
+
     expect_string(__wrap_realpath, path, "/proc/self/exe");
     will_return(__wrap_realpath, NULL);
     expect_string(__wrap_realpath, path, "/proc/curproc/file");
@@ -888,37 +919,13 @@ void test_w_homedir_check_argv0(void **state)
     free(val);
 }
 
-void test_w_homedir_env_var(void **state)
-{
-    char *val = NULL;
-    char *argv0 = "bin/test";
-    struct stat stat_buf = { .st_mode = 0040000 }; // S_IFDIR
-
-    expect_string(__wrap_realpath, path, "/proc/self/exe");
-    will_return(__wrap_realpath, NULL);
-    expect_string(__wrap_realpath, path, "/proc/curproc/file");
-    will_return(__wrap_realpath, NULL);
-    expect_string(__wrap_realpath, path, "/proc/self/path/a.out");
-    will_return(__wrap_realpath, NULL);
-    expect_string(__wrap_realpath, path, argv0);
-    will_return(__wrap_realpath, NULL);
-
-    expect_string(__wrap_getenv, name, WAZUH_HOME_ENV);
-    will_return(__wrap_getenv, "/home/wazuh");
-
-    expect_string(__wrap_stat, __file, "/home/wazuh");
-    will_return(__wrap_stat, &stat_buf);
-    will_return(__wrap_stat, 0);
-
-    val = w_homedir(argv0);
-    assert_string_equal(val, "/home/wazuh");
-    free(val);
-}
-
 void test_w_homedir_stat_fail(void **state)
 {
     char *argv0 = "/fake/dir/bin";
     struct stat stat_buf = { .st_mode = 0040000 }; // S_IFDIR
+
+    expect_string(__wrap_getenv, name, WAZUH_HOME_ENV);
+    will_return(__wrap_getenv, NULL);
 
     expect_string(__wrap_realpath, path, "/proc/self/exe");
     will_return(__wrap_realpath, argv0);
