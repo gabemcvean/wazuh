@@ -1612,9 +1612,9 @@ field: index_unclassified_events()
 
 ## Target Field
 
-| Type | Possible values |
-| ---- | --------------- |
-| array | [number, string, boolean, object, array] |
+| Path | Type | Possible values |
+| ---- | ---- | --------------- |
+| wazuh.integration.decoders | array | [number, string, boolean, object, array] |
 
 
 ## Description
@@ -1622,14 +1622,15 @@ field: index_unclassified_events()
 Determines whether unclassified events should be indexed based on policy configuration.
 This filter returns true if and only if:
 1. The policy flag 'indexUnclassifiedEvents' is enabled (configured at build time)
-2. The target field is an array containing exactly 1 element
+2. The target field is exactly 'wazuh.integration.decoders'
+3. 'wazuh.integration.decoders' is an array containing exactly 1 element
 
 This helper is used in output routing to decide whether to index events that have only
 one decoder (unclassified events) when the policy allows it. If the policy flag is
 disabled or the array has a different size, the validation fails.
 
-Note: This helper does not accept any arguments and depends on the policy context
-configured at build time.
+Note: This helper does not accept any arguments, rejects any target field other than
+'wazuh.integration.decoders', and depends on the policy context configured at build time.
 
 
 ## Keywords
@@ -1648,14 +1649,14 @@ Array with exactly one element (unclassified event)
 
 ```yaml
 check:
-  - target_field: index_unclassified_events()
+  - wazuh.integration.decoders: index_unclassified_events()
 ```
 
 #### Input Event
 
 ```json
 {
-  "target_field": [
+  "wazuh.integration.decoders": [
     "single_decoder"
   ]
 }
@@ -1671,7 +1672,7 @@ Empty array - not an unclassified event
 
 ```yaml
 check:
-  - target_field: index_unclassified_events()
+  - wazuh.integration.decoders: index_unclassified_events()
 ```
 
 #### Input Event
@@ -1690,14 +1691,14 @@ Array with two elements - classified event
 
 ```yaml
 check:
-  - target_field: index_unclassified_events()
+  - wazuh.integration.decoders: index_unclassified_events()
 ```
 
 #### Input Event
 
 ```json
 {
-  "target_field": [
+  "wazuh.integration.decoders": [
     "decoder1",
     "decoder2"
   ]
@@ -1714,14 +1715,14 @@ Array with three elements - classified event
 
 ```yaml
 check:
-  - target_field: index_unclassified_events()
+  - wazuh.integration.decoders: index_unclassified_events()
 ```
 
 #### Input Event
 
 ```json
 {
-  "target_field": [
+  "wazuh.integration.decoders": [
     "d1",
     "d2",
     "d3"
@@ -1739,14 +1740,14 @@ Target field is not an array
 
 ```yaml
 check:
-  - target_field: index_unclassified_events()
+  - wazuh.integration.decoders: index_unclassified_events()
 ```
 
 #### Input Event
 
 ```json
 {
-  "target_field": "not_an_array"
+  "wazuh.integration.decoders": "not_an_array"
 }
 ```
 
@@ -1760,14 +1761,14 @@ Target field is a number, not an array
 
 ```yaml
 check:
-  - target_field: index_unclassified_events()
+  - wazuh.integration.decoders: index_unclassified_events()
 ```
 
 #### Input Event
 
 ```json
 {
-  "target_field": 42
+  "wazuh.integration.decoders": 42
 }
 ```
 
@@ -3626,7 +3627,7 @@ check:
 {}
 ```
 
-*The check was performed with errors*
+*The check was successful*
 
 ### Example 2
 
