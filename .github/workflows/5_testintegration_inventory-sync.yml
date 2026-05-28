@@ -197,7 +197,7 @@ jobs:
           dpkg -l | grep wazuh || echo "[-] No Wazuh packages found"
 
           # Collect Wazuh logs if they exist
-          if [ -f /var/wazuh-manager/logs/wazuh-manager.log ]; then
+          if sudo test -f /var/wazuh-manager/logs/wazuh-manager.log; then
             echo "[*] Wazuh logs (last 50 lines):"
             sudo tail -50 /var/wazuh-manager/logs/wazuh-manager.log
 
