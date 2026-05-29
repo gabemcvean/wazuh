@@ -42,6 +42,12 @@ directory_t *fim_create_directory(const char *path,
 #ifndef WIN32
     if (CHECK_FOLLOW & options) {
         new_entry->symbolic_links = realpath(new_entry->path, NULL);
+    } else if (IsLink(new_entry->path) == 0) {
+        char *link_target = realpath(new_entry->path, NULL);
+        if (link_target) {
+            mwarn(FIM_WARN_SYMLINK_NOFOLLOW, new_entry->path, link_target, link_target);
+            os_free(link_target);
+        }
     }
 #endif
     if (filerestrict) {
