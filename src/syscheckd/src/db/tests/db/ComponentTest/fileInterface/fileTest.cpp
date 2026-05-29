@@ -515,6 +515,13 @@ TEST_F(DBTestFixture, TestFimDBPatternSearchWithSpecialCharsInPath)
     });
 }
 
+static void callbackFileDeleted(ReturnTypeCallback result_type, const cJSON* result_json, void* user_data)
+{
+    ASSERT_TRUE(result_type == ReturnTypeCallback::DELETED);
+    ASSERT_TRUE(result_json);
+    ASSERT_TRUE(user_data);
+}
+
 TEST_F(DBTestFixture, TestFimDBDeletePathWithSpecialCharsInPath)
 {
     const auto fileFIMTest {std::make_unique<FileItem>(insertSpecialCharsPayload["data"].front())};
@@ -527,8 +534,14 @@ TEST_F(DBTestFixture, TestFimDBDeletePathWithSpecialCharsInPath)
         auto count = fim_db_get_count_file_entry();
         ASSERT_EQ(count, 1);
 
-        result = fim_db_remove_path(
-                     "/tmp/evil\"UNION SELECT 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17--");
+        callback_context_t callback_data;
+        callback_data.callback_txn = callbackFileDeleted;
+        callback_data.context = &ctx1;
+
+        result = fim_db_get_path(
+                     "/tmp/evil\"UNION SELECT 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17--",
+                     callback_data,
+                     true);
         ASSERT_EQ(result, FIMDB_OK);
 
         count = fim_db_get_count_file_entry();
