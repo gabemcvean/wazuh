@@ -31,6 +31,8 @@ class EbpfWhodataTest : public ::testing::Test
         {
             event_received  = false;
             ebpf_hc_created = false;
+            fake_time_now = 0;
+            w_time = time;
 
             bpf_helpers = std::make_unique<w_bpf_helpers_t>();
             bpf_helpers->init_ring_buffer            = (init_ring_buffer_t)mock_init_ring_buffer_success;
@@ -41,6 +43,10 @@ class EbpfWhodataTest : public ::testing::Test
             bpf_helpers->bpf_object_next_program     = mock_bpf_object_next_program;
             bpf_helpers->bpf_program_attach          = mock_bpf_program_attach_success;
             bpf_helpers->bpf_object_find_map_fd_by_name = mock_bpf_object_find_map_fd_by_name_success;
+            bpf_helpers->bpf_program_set_autoload    = mock_bpf_program_set_autoload;
+            bpf_helpers->bpf_program_autoload        = mock_bpf_program_autoload_true;
+            bpf_helpers->bpf_program_section_name    = mock_bpf_program_section_name_kprobe;
+            bpf_helpers->bpf_program_name            = mock_bpf_program_name_default;
             bpf_helpers->ring_buffer_new             = mock_ring_buffer_new_success;
             bpf_helpers->check_invalid_kernel_version = (check_invalid_kernel_version_t)mock_check_invalid_kernel_version;
             bpf_helpers->init_libbpf                 = (init_libbpf_t)mock_init_libbpf;
@@ -49,7 +55,14 @@ class EbpfWhodataTest : public ::testing::Test
             bpf_helpers->ring_buffer_poll            = (ring_buffer__poll_t)mock_ring_buffer_poll_success_barrier;
         }
 
-        void TearDown() override {}
+        void TearDown() override
+        {
+            std::remove("/tmp/ebpf_hc");
+            event_received = false;
+            ebpf_hc_created = false;
+            w_time = time;
+            bpf_helpers.reset();
+        }
 };
 
 time_t mock_time(time_t* t)
@@ -101,7 +114,7 @@ TEST_F(EbpfWhodataTest, RingBufferPollError)
 
 TEST_F(EbpfWhodataTest, EbpfWhodataHealthcheckTestSuccess)
 {
-    event_received = true;
+    bpf_helpers->ring_buffer_poll = (ring_buffer__poll_t)mock_ring_buffer_poll_healthcheck_success;
     EXPECT_FALSE(ebpf_whodata_healthcheck());
 }
 

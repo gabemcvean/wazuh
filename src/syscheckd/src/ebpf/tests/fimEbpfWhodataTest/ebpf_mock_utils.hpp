@@ -157,15 +157,15 @@ bpf_program* mock_bpf_object_next_program([[maybe_unused]] const struct bpf_obje
 }
 bpf_program* mock_bpf_object_next_program_in([[maybe_unused]] const struct bpf_object* obj, [[maybe_unused]] struct bpf_program* pos)
 {
-    return (bpf_program*)1;
+    return pos == nullptr ? (bpf_program*)1 : nullptr;
 }
-int mock_bpf_program_attach_success([[maybe_unused]] struct bpf_program* prog)
+struct bpf_link* mock_bpf_program_attach_success([[maybe_unused]] struct bpf_program* prog)
 {
-    return 1;
+    return (struct bpf_link*)1;
 }
-int mock_bpf_program_attach_failure([[maybe_unused]] struct bpf_program* prog)
+struct bpf_link* mock_bpf_program_attach_failure([[maybe_unused]] struct bpf_program* prog)
 {
-    return 0;
+    return nullptr;
 }
 int mock_bpf_object_find_map_fd_by_name_success([[maybe_unused]] struct bpf_object* obj, [[maybe_unused]] const char* name)
 {
@@ -174,6 +174,26 @@ int mock_bpf_object_find_map_fd_by_name_success([[maybe_unused]] struct bpf_obje
 int mock_bpf_object_find_map_fd_by_name_failure([[maybe_unused]] struct bpf_object* obj, [[maybe_unused]] const char* name)
 {
     return -1;
+}
+int mock_bpf_program_set_autoload([[maybe_unused]] struct bpf_program* prog, [[maybe_unused]] bool autoload)
+{
+    return 0;
+}
+bool mock_bpf_program_autoload_true([[maybe_unused]] const struct bpf_program* prog)
+{
+    return true;
+}
+bool mock_bpf_program_autoload_false([[maybe_unused]] const struct bpf_program* prog)
+{
+    return false;
+}
+const char* mock_bpf_program_section_name_kprobe([[maybe_unused]] const struct bpf_program* prog)
+{
+    return "kprobe/security_inode_setattr";
+}
+const char* mock_bpf_program_name_default([[maybe_unused]] const struct bpf_program* prog)
+{
+    return "mock_prog";
 }
 
 ring_buffer* mock_ring_buffer_new_success([[maybe_unused]] int fd, [[maybe_unused]] ring_buffer_sample_fn sample_cb, [[maybe_unused]] void* ctx, [[maybe_unused]] void* consumer_ctx)
@@ -187,6 +207,19 @@ ring_buffer* mock_ring_buffer_new_failure([[maybe_unused]] int fd, [[maybe_unuse
 }
 
 void mock_ring_buffer_free([[maybe_unused]] ring_buffer* rb) {}
+int mock_ring_buffer_poll_success([[maybe_unused]] ring_buffer* rb, [[maybe_unused]] int timeout_ms)
+{
+    return 1;
+}
+int mock_ring_buffer_poll_healthcheck_success([[maybe_unused]] ring_buffer* rb, [[maybe_unused]] int timeout_ms)
+{
+    event_received = true;
+    return 1;
+}
+int mock_ring_buffer_poll_failure([[maybe_unused]] ring_buffer* rb, [[maybe_unused]] int timeout_ms)
+{
+    return -1;
+}
 void mock_w_bpf_deinit([[maybe_unused]] void* helpers) {}
 int mock_init_ring_buffer_success([[maybe_unused]] ring_buffer** rb, [[maybe_unused]] ring_buffer_sample_fn sample_cb)
 {

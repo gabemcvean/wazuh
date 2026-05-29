@@ -1783,6 +1783,114 @@ def test_master_get_node(get_running_loop_mock):
                                        'node': master_class.configuration['node_name']}
 
 
+@pytest.mark.parametrize('item_key, expected_error', [
+    ("invalid_key", True),
+    ("queue/testing/", False),
+])
+@patch("wazuh.core.cluster.master.safe_join", return_value="/some/path")
+@patch("wazuh.core.common.wazuh_uid", return_value="wazuh_uid")
+@patch("wazuh.core.common.wazuh_gid", return_value="wazuh_gid")
+def test_master_handler_process_files_from_worker_validates_cluster_item_key(gid_mock, uid_mock, safe_join_mock,
+                                                                             item_key, expected_error):
+    """Test that process_files_from_worker validates cluster_item_key."""
+    master_handler = get_master_handler()
+    files_metadata = {"data": {"merged": False, "cluster_item_key": item_key}}
+
+    result = master_handler.process_files_from_worker(
+        files_metadata=files_metadata,
+        decompressed_files_path='/decompressed/files/path',
+        cluster_items=cluster_items,
+        worker_name='worker1',
+        timeout=0
+    )
+
+    if expected_error:
+        assert 'Invalid cluster_item_key' in str(result['generic_errors'])
+    else:
+        assert 'Invalid cluster_item_key' not in str(result.get('generic_errors', []))
+
+
+@patch("wazuh.core.cluster.master.safe_join")
+@patch("os.path.basename", return_value="file.txt")
+@patch("wazuh.core.common.wazuh_uid", return_value="wazuh_uid")
+@patch("wazuh.core.common.wazuh_gid", return_value="wazuh_gid")
+def test_master_handler_process_files_from_worker_validates_path_confinement(gid_mock, uid_mock, basename_mock,
+                                                                             safe_join_mock):
+    """Test that process_files_from_worker validates path confinement for merged files."""
+    master_handler = get_master_handler()
+    files_metadata = {
+        "data": {"merged": True, "merge_type": "type", "merge_name": "name", "cluster_item_key": "queue/testing/"}
+    }
+
+    def custom_safe_join(*args):
+        return "/".join(str(a) for a in args)
+
+    safe_join_mock.side_effect = custom_safe_join
+
+    with patch("wazuh.core.cluster.cluster.unmerge_info",
+               return_value=[("queue/other/file.txt", "data", '1970-01-01 00:00:00+00:00')]):
+        with patch("os.path.commonpath", return_value="/var/ossec/queue/other"):
+            result = master_handler.process_files_from_worker(
+                files_metadata=files_metadata,
+                decompressed_files_path='/decompressed/files/path',
+                cluster_items=cluster_items,
+                worker_name='worker1',
+                timeout=0
+            )
+
+            assert len(result['errors_per_folder']['queue/testing/']) > 0
+            assert any('outside allowed directory' in str(e) or '3022' in str(e)
+                       for e in result['errors_per_folder']['queue/testing/'])
+
+
+@patch("os.path.basename")
+@patch("wazuh.core.common.wazuh_uid", return_value="wazuh_uid")
+@patch("wazuh.core.common.wazuh_gid", return_value="wazuh_gid")
+@patch("wazuh.core.cluster.master.utils.safe_move")
+def test_master_handler_process_files_from_worker_validates_non_merged_path(safe_move_mock, gid_mock, uid_mock,
+                                                                            basename_mock):
+    """Test that process_files_from_worker validates path confinement for non-merged files."""
+    master_handler = get_master_handler()
+
+    basename_mock.return_value = "file.txt"
+    files_metadata = {"queue/testing/file.txt": {"merged": False, "cluster_item_key": "queue/testing/"}}
+    result = master_handler.process_files_from_worker(
+        files_metadata=files_metadata,
+        decompressed_files_path='/decompressed',
+        cluster_items=cluster_items,
+        worker_name='worker1',
+        timeout=0
+    )
+    assert result['errors_per_folder'] == defaultdict(list)
+
+    files_metadata = {"etc/ossec.conf": {"merged": False, "cluster_item_key": "queue/testing/"}}
+    result = master_handler.process_files_from_worker(
+        files_metadata=files_metadata,
+        decompressed_files_path='/decompressed',
+        cluster_items=cluster_items,
+        worker_name='worker1',
+        timeout=0
+    )
+    assert len(result['errors_per_folder']['queue/testing/']) > 0
+    assert any('outside allowed directory' in str(e) or '3022' in str(e)
+               for e in result['errors_per_folder']['queue/testing/'])
+
+    basename_mock.return_value = "excluded.txt"
+    cluster_items_with_excluded = dict(cluster_items)
+    cluster_items_with_excluded['files'] = {**cluster_items['files'], 'excluded_files': ['excluded.txt']}
+    files_metadata = {"queue/testing/excluded.txt": {"merged": False, "cluster_item_key": "queue/testing/"}}
+    result = master_handler.process_files_from_worker(
+        files_metadata=files_metadata,
+        decompressed_files_path='/decompressed',
+        cluster_items=cluster_items_with_excluded,
+        worker_name='worker1',
+        timeout=0
+    )
+    assert len(result['errors_per_folder']['queue/testing/']) > 0
+    assert any('excluded list' in str(e) or '3022' in str(e)
+               for e in result['errors_per_folder']['queue/testing/'])
+
+
 @pytest.mark.asyncio
 @patch('wazuh.core.indexer.disconnected_agents.get_ossec_conf', return_value={})
 async def test_disconnected_agent_group_sync_task_initialization(get_ossec_conf_mock):
