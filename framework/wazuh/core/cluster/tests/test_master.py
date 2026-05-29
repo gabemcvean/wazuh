@@ -1388,6 +1388,7 @@ def test_master_handler_process_files_from_worker_ok(gid_mock, uid_mock, basenam
     assert result == {'errors_per_folder': defaultdict(list),
                       'generic_errors': [], 'total_updated': 0}
     path_join_mock.assert_has_calls([call(common.WAZUH_PATH, 'data'),
+                                     call(common.WAZUH_PATH, 'queue/testing/'),
                                      call(decompressed_files_path, 'data')])
 
     safe_move_mock.side_effect = TimeoutError
