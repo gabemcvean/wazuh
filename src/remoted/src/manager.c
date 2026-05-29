@@ -689,11 +689,6 @@ void save_controlmsg(const keyentry * key, char *r_msg, int *wdb_sock, bool *pos
                 os_strdup(node_name, agent_data->node_name);
             }
 
-            if (agent_data->version) {
-                wm_strcat(&agent_data->labels, version_label, agent_data->labels ? '\n' : 0);
-                wm_strcat(&agent_data->labels, agent_data->version, 0);
-            }
-
             /* Detect a change in the merged_sum reported by the agent versus the
              * previous keepalive. After a hot reload the agent does not send
              * #!-agent startup, so on worker nodes the cluster sync would only
