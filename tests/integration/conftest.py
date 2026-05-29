@@ -545,12 +545,14 @@ def configure_sockets_environment_implementation(
         try:
             services.control_service("stop")
         except Exception as e:
-            logger.warning(f"Setup step failed: {e}")
+            logger.error(f"Setup step failed: {e}")
+            raise
 
         try:
             services.wait_expected_daemon_status(running_condition=False)
         except Exception as e:
-            logger.warning(f"Setup step failed: {e}")
+            logger.error(f"Setup step failed: {e}")
+            raise
 
 
         # Clean leftover daemons. Missing files are the expected case when the
@@ -584,7 +586,9 @@ def configure_sockets_environment_implementation(
                 started_mitms.append(mitm)
 
             services.control_service("start", daemon=daemon, debug_mode=True)
-            started_daemons.append(daemon)
+
+            if daemon is not None:
+                started_daemons.append(daemon)
 
             # Use a 60s timeout (vs the framework default of 10s) because
             # test_authd_key_request_worker has been observed to need >30s for
@@ -644,7 +648,14 @@ def configure_sockets_environment_implementation(
         try:
             database.delete_dbs()
         except Exception as e:
-            logger.warning(f"Cleanup step failed: {e}")
+            logger.error(f"Cleanup step failed: {e}")
+            raise
+
+        try:
+            services.control_service("start")
+        except Exception as e:
+            logger.error(f"Cleanup step failed: {e}")
+            raise
 
 
 @pytest.fixture(scope="module")

@@ -59,12 +59,12 @@ test_configuration, test_metadata, test_cases_ids = get_test_cases_data(test_cas
 test_configuration = load_configuration_template(test_configuration_path, test_configuration, test_metadata)
 
 # Variables
-receiver_sockets_params = [(AUTHD_SOCKET_PATH, 'AF_UNIX', 'TCP'), (WAZUH_DB_SOCKET_PATH, 'AF_UNIX', 'TCP')]
+receiver_sockets_params = [ (AUTHD_SOCKET_PATH, 'AF_UNIX', 'TCP'), (WAZUH_DB_SOCKET_PATH, 'AF_UNIX', 'TCP')]
 
 daemons_handler_configuration = {'all_daemons': True}
 local_internal_options = {AUTHD_DEBUG_CONFIG: '2'}
 
-monitored_sockets_params = [(WAZUH_DB_DAEMON, None, True), (AUTHD_DAEMON, None, True)]
+monitored_sockets_params = [(AUTHD_DAEMON, None, True), (WAZUH_DB_DAEMON, None, True)]
 receiver_sockets, monitored_sockets = None, None
 
 
@@ -78,7 +78,7 @@ def test_authd_local_messages(test_configuration, test_metadata, set_wazuh_confi
         Checks that every input message in trough local authd port generates the adequate response to worker.
 
     wazuh_min_version:
-        4.2.0
+        5.0.0
 
     tier: 0
 
